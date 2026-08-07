@@ -1,0 +1,10 @@
+node_modules
+dist
+build
+.next
+out
+.turbo
+coverage
+package-lock.json
+*.md.tmp
+apps/backend/prisma/migrations

@@ -1,0 +1,37 @@
+{
+  "name": "@expense-tracker/shared",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Общие zod-схемы, типы и константы для api и web",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "clean": "rimraf dist .turbo"
+  },
+  "dependencies": {
+    "zod": "3.24.1"
+  },
+  "devDependencies": {
+    "@expense-tracker/config": "*",
+    "eslint": "9.18.0",
+    "rimraf": "6.0.1",
+    "tsup": "8.3.5",
+    "typescript": "5.7.3"
+  }
+}

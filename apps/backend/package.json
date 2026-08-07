@@ -1,0 +1,62 @@
+{
+  "name": "@expense-tracker/backend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Backend трекера расходов на Nest.js + Prisma",
+  "scripts": {
+    "dev": "nest start --watch",
+    "debug": "nest start --debug --watch",
+    "build": "prisma generate && nest build && tsc-alias -p tsconfig.build.json",
+    "start": "node dist/main",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "clean": "rimraf dist .turbo",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:studio": "prisma studio",
+    "db:seed": "prisma db seed",
+    "db:reset": "prisma migrate reset --force"
+  },
+  "prisma": {
+    "seed": "ts-node -r tsconfig-paths/register prisma/seed.ts"
+  },
+  "dependencies": {
+    "@expense-tracker/shared": "*",
+    "@nestjs/common": "11.0.6",
+    "@nestjs/config": "4.0.0",
+    "@nestjs/core": "11.0.6",
+    "@nestjs/cqrs": "^11.0.3",
+    "@nestjs/jwt": "11.0.0",
+    "@nestjs/passport": "11.0.5",
+    "@nestjs/platform-express": "11.0.6",
+    "@nestjs/swagger": "11.0.3",
+    "@nestjs/throttler": "6.4.0",
+    "@prisma/client": "6.2.1",
+    "argon2": "0.41.1",
+    "cookie-parser": "1.4.7",
+    "helmet": "8.0.0",
+    "nestjs-zod": "4.3.1",
+    "passport": "0.7.0",
+    "passport-jwt": "4.0.1",
+    "reflect-metadata": "0.2.2",
+    "rxjs": "7.8.1",
+    "zod": "3.24.1"
+  },
+  "devDependencies": {
+    "@expense-tracker/config": "*",
+    "@nestjs/cli": "11.0.2",
+    "@nestjs/schematics": "11.0.0",
+    "@types/cookie-parser": "1.4.8",
+    "@types/express": "5.0.0",
+    "@types/node": "22.10.7",
+    "@types/passport-jwt": "4.0.1",
+    "eslint": "9.18.0",
+    "prisma": "6.2.1",
+    "rimraf": "6.0.1",
+    "ts-node": "10.9.2",
+    "tsc-alias": "1.8.10",
+    "tsconfig-paths": "4.2.0",
+    "typescript": "5.7.3"
+  }
+}

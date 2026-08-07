@@ -1,0 +1,11 @@
+{
+  "extends": "@expense-tracker/config/tsconfig/base.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "types": ["node"]
+  },
+  // tsup.config.ts лежит вне rootDir 'src' — включать его в program нельзя (TS6059)
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}

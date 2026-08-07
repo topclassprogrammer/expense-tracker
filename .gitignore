@@ -1,0 +1,45 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# builds
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+
+# turbo
+.turbo/
+
+# env
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# prisma
+prisma/generated/
+
+# tests / coverage
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+
+# logs
+logs/
+*.log
+npm-debug.log*
+
+# editors / os
+.idea/
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
+
+# misc
+.cache/
+tmp/

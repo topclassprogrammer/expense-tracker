@@ -1,0 +1,44 @@
+{
+  "name": "expense-tracker",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Монорепозиторий трекера расходов: Next.js + Nest.js + Prisma/PostgreSQL",
+  "packageManager": "npm@10.9.3",
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:frontend": "turbo run dev --filter=@expense-tracker/frontend",
+    "dev:backend": "turbo run dev --filter=@expense-tracker/backend",
+    "build": "turbo run build",
+    "start": "turbo run start",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint -- --fix",
+    "typecheck": "turbo run typecheck",
+    "format": "prettier --write \"**/*.{ts,tsx,js,mjs,cjs,json,md,css,yml,yaml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,mjs,cjs,json,md,css,yml,yaml}\"",
+    "clean": "turbo run clean && rimraf node_modules .turbo",
+    "db:generate": "npm run db:generate --workspace @expense-tracker/backend",
+    "db:migrate": "npm run db:migrate --workspace @expense-tracker/backend",
+    "db:deploy": "npm run db:deploy --workspace @expense-tracker/backend",
+    "db:studio": "npm run db:studio --workspace @expense-tracker/backend",
+    "db:seed": "npm run db:seed --workspace @expense-tracker/backend",
+    "db:reset": "npm run db:reset --workspace @expense-tracker/backend",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f postgres"
+  },
+  "devDependencies": {
+    "@expense-tracker/config": "*",
+    "prettier": "3.4.2",
+    "rimraf": "6.0.1",
+    "turbo": "2.3.3",
+    "typescript": "5.7.3"
+  }
+}
