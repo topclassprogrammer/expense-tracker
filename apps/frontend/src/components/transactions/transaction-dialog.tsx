@@ -35,7 +35,7 @@ import {
 import { useCategories } from '@/hooks/use-categories';
 import { useCreateTransaction, useUpdateTransaction } from '@/hooks/use-transactions';
 import { getApiErrorMessage } from '@/lib/api-error';
-import { cn } from '@/lib/utils';
+import { cn, INCOME_COLOR_CLASS } from '@/lib/utils';
 
 /**
  * Форма работает со строками, как их отдаёт <input>. Сумма намеренно остаётся
@@ -83,7 +83,10 @@ export function TransactionDialog({
     setValue,
     watch,
     formState: { errors },
-  } = useForm<TransactionFormValues>({
+    // Третий параметр — реальный тип значений после zodResolver (amount
+    // нормализован, date — уже Date из z.coerce.date()), а не сырой
+    // TransactionFormValues, который описывает лишь состояние полей формы.
+  } = useForm<TransactionFormValues, unknown, CreateTransactionDto>({
     resolver: zodResolver(createTransactionSchema),
     defaultValues: emptyValues(currency),
   });
@@ -110,14 +113,11 @@ export function TransactionDialog({
   const isPending = createTransaction.isPending || updateTransaction.isPending;
 
   const onSubmit = handleSubmit((values) => {
-    // Собираем DTO явно: zodResolver уже привёл значения, но типы формы строковые
+    // values уже приведены resolver'ом к CreateTransactionDto; описание
+    // отдельно нормализуем в undefined — zod .trim() пустую строку не убирает.
     const dto: CreateTransactionDto = {
-      amount: String(values.amount),
-      type: values.type,
-      currency: values.currency,
-      date: new Date(values.date),
+      ...values,
       description: values.description?.trim() || undefined,
-      categoryId: values.categoryId,
     };
 
     const onSuccess = () => {
@@ -155,9 +155,7 @@ export function TransactionDialog({
                   onClick={() => setValue('type', option.value, { shouldValidate: true })}
                   className={cn(
                     selectedType === option.value && 'border-foreground border',
-                    option.value === 'INCOME' &&
-                      selectedType === option.value &&
-                      'text-emerald-600 dark:text-emerald-400',
+                    option.value === 'INCOME' && selectedType === option.value && INCOME_COLOR_CLASS,
                   )}
                 >
                   {option.label}

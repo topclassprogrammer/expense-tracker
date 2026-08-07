@@ -21,7 +21,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCurrentUser } from '@/hooks/use-auth';
 import { useTransactionSummary, useTransactions } from '@/hooks/use-transactions';
-import { cn } from '@/lib/utils';
+import { cn, INCOME_COLOR_CLASS } from '@/lib/utils';
 
 /** Сколько операций показываем на одной странице списка. */
 const PAGE_SIZE = 10;
@@ -107,7 +107,7 @@ export default function DashboardPage() {
           label="Доходы"
           value={formatMoney(summary?.income ?? '0', currency)}
           isLoading={isSummaryLoading}
-          className="text-emerald-600 dark:text-emerald-400"
+          className={INCOME_COLOR_CLASS}
         />
         <SummaryCard
           label="Расходы"

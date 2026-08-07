@@ -8,7 +8,7 @@ import { Pencil, Trash2 } from 'lucide-react';
 import { CategoryIcon } from '@/components/categories/category-icon';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { cn } from '@/lib/utils';
+import { cn, INCOME_COLOR_CLASS } from '@/lib/utils';
 
 interface TransactionListProps {
   transactions: Transaction[];
@@ -91,7 +91,7 @@ export function TransactionList({
             <span
               className={cn(
                 'w-32 text-right text-sm font-medium tabular-nums',
-                isIncome && 'text-emerald-600 dark:text-emerald-400',
+                isIncome && INCOME_COLOR_CLASS,
               )}
             >
               {isIncome ? '+' : '−'}
