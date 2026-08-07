@@ -1,9 +1,6 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, Res, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { QueryBus } from '@nestjs/cqrs';
-import { ApiBearerAuth, ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-
-import { GetUserByIdQuery } from '../users/queries/get-user-by-id.query';
+import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { REFRESH_COOKIE_NAME, REFRESH_COOKIE_PATH } from './auth.constants';
 import { AuthService } from './auth.service';
@@ -13,7 +10,7 @@ import type { RefreshRequestUser } from './strategies/jwt-refresh.strategy';
 import type { AuthResponse } from '@expense-tracker/shared';
 import type { CookieOptions, Response } from 'express';
 
-import { CurrentUser, type RequestUser } from '@/common/decorators/current-user.decorator';
+import { CurrentUser } from '@/common/decorators/current-user.decorator';
 import { Public } from '@/common/decorators/public.decorator';
 import { JwtRefreshGuard } from '@/common/guards/jwt-refresh.guard';
 
@@ -22,7 +19,6 @@ import { JwtRefreshGuard } from '@/common/guards/jwt-refresh.guard';
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly queryBus: QueryBus,
     private readonly config: ConfigService,
   ) {}
 
@@ -83,14 +79,6 @@ export class AuthController {
   ): Promise<void> {
     await this.authService.logout(user.refreshToken);
     response.clearCookie(REFRESH_COOKIE_NAME, { path: REFRESH_COOKIE_PATH });
-  }
-
-  /** Текущий пользователь по access-токену. */
-  @Get('me')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Текущий пользователь' })
-  me(@CurrentUser() user: RequestUser) {
-    return this.queryBus.execute(new GetUserByIdQuery(user.id));
   }
 
   private setRefreshCookie(response: Response, token: string): void {
