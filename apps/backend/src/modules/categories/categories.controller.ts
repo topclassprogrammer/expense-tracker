@@ -73,7 +73,7 @@ export class CategoriesController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Удаление категории' })
   @ApiForbiddenResponse({ description: 'Системную категорию нельзя удалить' })
-  @ApiConflictResponse({ description: 'Категория используется в расходах' })
+  @ApiConflictResponse({ description: 'Категория используется в операциях' })
   remove(@CurrentUser('id') userId: string, @Param('id') id: string): Promise<void> {
     return this.categoriesService.remove(userId, id);
   }

@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { CURRENCIES, DEFAULT_CURRENCY } from '../constants/currencies';
 
-import { amountSchema } from './expense.schema';
+import { amountSchema } from './common.schema';
 
 /** Период бюджета в формате YYYY-MM. */
 export const budgetPeriodSchema = z

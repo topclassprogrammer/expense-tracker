@@ -8,13 +8,14 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCategories } from '@/hooks/use-categories';
-import { useExpenses } from '@/hooks/use-expenses';
+import { useTransactions } from '@/hooks/use-transactions';
+import { cn } from '@/lib/utils';
 
 export default function ExpensesPage() {
   const [page, setPage] = useState(1);
   const [categoryId, setCategoryId] = useState<string | undefined>();
 
-  const { data, isLoading } = useExpenses({ page, limit: 20, categoryId });
+  const { data, isLoading } = useTransactions({ page, limit: 20, categoryId });
   const { data: categories } = useCategories();
 
   const meta = data?.meta;
@@ -71,24 +72,35 @@ export default function ExpensesPage() {
             <p className="text-muted-foreground text-sm">Расходов за выбранный фильтр нет.</p>
           )}
 
-          {data?.items.map((expense) => (
-            <div key={expense.id} className="flex items-center gap-3 border-b py-3 last:border-b-0">
+          {data?.items.map((transaction) => (
+            <div
+              key={transaction.id}
+              className="flex items-center gap-3 border-b py-3 last:border-b-0"
+            >
               <span
                 className="size-3 shrink-0 rounded-full"
-                style={{ backgroundColor: expense.category?.color ?? '#64748b' }}
+                style={{ backgroundColor: transaction.category?.color ?? '#64748b' }}
                 aria-hidden
               />
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium">{expense.category?.name ?? '—'}</p>
-                {expense.note && (
-                  <p className="text-muted-foreground truncate text-xs">{expense.note}</p>
+                <p className="truncate text-sm font-medium">{transaction.category?.name ?? '—'}</p>
+                {transaction.description && (
+                  <p className="text-muted-foreground truncate text-xs">
+                    {transaction.description}
+                  </p>
                 )}
               </div>
               <span className="text-muted-foreground text-sm">
-                {format(new Date(expense.date), 'd MMM yyyy', { locale: ru })}
+                {format(new Date(transaction.date), 'd MMM yyyy', { locale: ru })}
               </span>
-              <span className="w-28 text-right text-sm font-medium">
-                {formatMoney(expense.amount, expense.currency as Currency)}
+              <span
+                className={cn(
+                  'w-28 text-right text-sm font-medium',
+                  transaction.type === 'INCOME' && 'text-emerald-600 dark:text-emerald-400',
+                )}
+              >
+                {transaction.type === 'INCOME' ? '+' : '−'}
+                {formatMoney(transaction.amount, transaction.currency as Currency)}
               </span>
             </div>
           ))}

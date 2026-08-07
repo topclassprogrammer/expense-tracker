@@ -10,7 +10,7 @@ import { map, type Observable } from 'rxjs';
 /**
  * Prisma отдаёт Decimal как объект, а JSON.stringify превращает его
  * в число с потерей точности. Рекурсивно приводим Decimal к строке —
- * фронтенд ожидает `amount: string` (см. expenseSchema в shared).
+ * фронтенд ожидает `amount: string` (см. transactionSchema в shared).
  */
 @Injectable()
 export class DecimalSerializerInterceptor implements NestInterceptor {

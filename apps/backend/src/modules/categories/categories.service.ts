@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 
-import { CountExpensesByCategoryQuery } from '../expenses/queries/count-expenses-by-category.query';
+import { CountTransactionsByCategoryQuery } from '../transactions/queries/count-transactions-by-category.query';
 
 import type { CategoryQueryDto, CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
 import type { Category } from '@prisma/client';
@@ -53,11 +53,11 @@ export class CategoriesService {
   async remove(userId: string, id: string): Promise<void> {
     await this.assertOwned(userId, id);
 
-    const expensesCount = await this.queryBus.execute(new CountExpensesByCategoryQuery(id));
+    const transactionsCount = await this.queryBus.execute(new CountTransactionsByCategoryQuery(id));
 
-    if (expensesCount > 0) {
+    if (transactionsCount > 0) {
       throw new ConflictException(
-        `Категория используется в ${expensesCount} расходах — сначала перенесите их в другую категорию`,
+        `Категория используется в ${transactionsCount} операциях — сначала перенесите их в другую категорию`,
       );
     }
 

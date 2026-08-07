@@ -6,8 +6,8 @@ import { ZodValidationPipe } from 'nestjs-zod';
 
 import { AuthModule } from './modules/auth/auth.module';
 import { CategoriesModule } from './modules/categories/categories.module';
-import { ExpensesModule } from './modules/expenses/expenses.module';
 import { HealthModule } from './modules/health/health.module';
+import { TransactionsModule } from './modules/transactions/transactions.module';
 import { UsersModule } from './modules/users/users.module';
 
 import { AllExceptionsFilter } from '@/common/filters/http-exception.filter';
@@ -27,7 +27,7 @@ import { PrismaModule } from '@/prisma/prisma.module';
     AuthModule,
     UsersModule,
     CategoriesModule,
-    ExpensesModule,
+    TransactionsModule,
     HealthModule,
   ],
   providers: [

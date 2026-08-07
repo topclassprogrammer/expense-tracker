@@ -3,6 +3,19 @@ import { z } from 'zod';
 /** Идентификатор сущности (cuid). */
 export const idSchema = z.string().cuid();
 
+/**
+ * Сумма передаётся строкой: Prisma отдаёт Decimal(12,2), и строка
+ * защищает от потери точности при сериализации в JSON.
+ *
+ * Живёт здесь, а не в схеме конкретного домена: используется и транзакциями,
+ * и бюджетами, а импорт между доменными схемами создавал бы лишнюю связность.
+ */
+export const amountSchema = z
+  .union([z.string(), z.number()])
+  .transform((value) => (typeof value === 'number' ? value.toFixed(2) : value))
+  .refine((value) => /^\d{1,10}(\.\d{1,2})?$/.test(value), 'Некорректная сумма')
+  .refine((value) => Number(value) > 0, 'Сумма должна быть больше нуля');
+
 /** Параметры постраничной выборки. */
 export const paginationQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),

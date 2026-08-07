@@ -1,4 +1,15 @@
-import type { ExpenseQuery, ExpenseSummaryQuery } from '@expense-tracker/shared';
+import type { Currency, TransactionQuery } from '@expense-tracker/shared';
+
+/**
+ * Параметры сводки типизированы вручную, а не через Partial<TransactionSummaryQuery>:
+ * month и year обязательны на бэкенде, и Partial<> спрятал бы их пропуск от
+ * тайпчека, оставив ошибку 400 на рантайм.
+ */
+export interface TransactionSummaryParams {
+  month: number;
+  year: number;
+  currency?: Currency;
+}
 
 /** Единая фабрика ключей кэша TanStack Query. */
 export const queryKeys = {
@@ -10,10 +21,10 @@ export const queryKeys = {
     list: (includeDefaults: boolean) => ['categories', 'list', { includeDefaults }] as const,
     detail: (id: string) => ['categories', 'detail', id] as const,
   },
-  expenses: {
-    all: () => ['expenses'] as const,
-    list: (query: Partial<ExpenseQuery>) => ['expenses', 'list', query] as const,
-    detail: (id: string) => ['expenses', 'detail', id] as const,
-    summary: (query: Partial<ExpenseSummaryQuery>) => ['expenses', 'summary', query] as const,
+  transactions: {
+    all: () => ['transactions'] as const,
+    list: (query: Partial<TransactionQuery>) => ['transactions', 'list', query] as const,
+    detail: (id: string) => ['transactions', 'detail', id] as const,
+    summary: (query: TransactionSummaryParams) => ['transactions', 'summary', query] as const,
   },
 } as const;

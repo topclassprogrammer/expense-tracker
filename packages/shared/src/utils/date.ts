@@ -12,6 +12,11 @@ export function currentPeriod(date = new Date()): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
 }
 
+/** Период "YYYY-MM" из года и месяца — вход для monthRange(). */
+export function periodOf(year: number, month: number): string {
+  return `${year}-${String(month).padStart(2, '0')}`;
+}
+
 /** Дата в формате "YYYY-MM-DD" — ключ группировки в сводках и значение для <input type="date">. */
 export function toDateKey(date: Date): string {
   return date.toISOString().slice(0, 10);
