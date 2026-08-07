@@ -1,6 +1,6 @@
 'use client';
 
-import { LayoutDashboard, ListOrdered, Settings, Tags } from 'lucide-react';
+import { LayoutDashboard, Settings, Tags } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -8,7 +8,6 @@ import { cn } from '@/lib/utils';
 
 const NAV_ITEMS = [
   { href: '/', label: 'Дашборд', icon: LayoutDashboard },
-  { href: '/expenses', label: 'Расходы', icon: ListOrdered },
   { href: '/categories', label: 'Категории', icon: Tags },
   { href: '/settings', label: 'Настройки', icon: Settings },
 ] as const;
