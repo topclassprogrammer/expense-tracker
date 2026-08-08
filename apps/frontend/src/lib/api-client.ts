@@ -62,6 +62,23 @@ apiClient.interceptors.response.use(
   },
 );
 
+/**
+ * Восстанавливает сессию после перезагрузки страницы: access-токен живёт только
+ * в памяти и теряется при F5, а httpOnly refresh-cookie переживает её.
+ * Использует тот же refreshPromise, что и интерсептор, — иначе одновременный
+ * 401 запустил бы вторую ротацию и отозвал только что выданный токен.
+ */
+export async function restoreSession(): Promise<void> {
+  try {
+    refreshPromise ??= refreshAccessToken();
+    await refreshPromise;
+  } catch {
+    // Гостя на защищённой странице уводит middleware по отсутствию cookie
+  } finally {
+    refreshPromise = null;
+  }
+}
+
 async function refreshAccessToken(): Promise<string> {
   const { data } = await axios.post<AuthResponse>(
     `${baseURL}/auth/refresh`,
