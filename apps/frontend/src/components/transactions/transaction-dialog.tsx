@@ -9,7 +9,7 @@ import {
   type TransactionType,
 } from '@expense-tracker/shared';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -91,6 +91,11 @@ export function TransactionDialog({
     defaultValues: emptyValues(currency),
   });
 
+  // currency нужна только в момент открытия (для дефолта новой операции), но не
+  // должна вызывать пересброс формы, если подгрузится уже после открытия диалога.
+  const currencyRef = useRef(currency);
+  currencyRef.current = currency;
+
   // Диалог не размонтируется между открытиями — значения сбрасываем вручную.
   useEffect(() => {
     if (!open) return;
@@ -105,9 +110,9 @@ export function TransactionDialog({
             description: transaction.description ?? '',
             categoryId: transaction.categoryId,
           }
-        : emptyValues(currency),
+        : emptyValues(currencyRef.current),
     );
-  }, [open, transaction, currency, reset]);
+  }, [open, transaction, reset]);
 
   const selectedType = watch('type');
   const isPending = createTransaction.isPending || updateTransaction.isPending;

@@ -8,7 +8,7 @@ import {
   type Transaction,
   type TransactionType,
 } from '@expense-tracker/shared';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { CategoryDialog } from '@/components/categories/category-dialog';
 import { TransactionDeleteDialog } from '@/components/transactions/transaction-delete-dialog';
@@ -64,6 +64,13 @@ export default function DashboardPage() {
   const meta = transactions?.meta;
   const isNegative = Number(summary?.net ?? 0) < 0;
 
+  /** Удаление операции или сужение фильтров может оставить page за пределами нового totalPages. */
+  useEffect(() => {
+    if (meta && meta.totalPages > 0 && page > meta.totalPages) {
+      setPage(meta.totalPages);
+    }
+  }, [meta, page]);
+
   /** Любая смена фильтра возвращает список на первую страницу. */
   const withPageReset =
     <T,>(setter: (value: T) => void) =>
@@ -91,7 +98,7 @@ export default function DashboardPage() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold">Дашборд</h1>
+          <h1 className="text-2xl font-semibold">Трекер расходов</h1>
           <p className="text-muted-foreground text-sm">Сводка и операции за выбранный месяц</p>
         </div>
         <div className="flex gap-2">
