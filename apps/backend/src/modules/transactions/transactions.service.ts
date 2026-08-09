@@ -32,6 +32,10 @@ interface CategoryBucket {
   count: number;
 }
 
+/**
+ * Бизнес-логика операций (доходы/расходы): CRUD, подсчёт по категории и месячная сводка.
+ * Все методы, принимающие `userId`, ограничивают выборку операциями этого пользователя.
+ */
 @Injectable()
 export class TransactionsService {
   constructor(
@@ -39,6 +43,13 @@ export class TransactionsService {
     private readonly queryBus: QueryBus,
   ) {}
 
+  /**
+   * Список операций пользователя с фильтрами и пагинацией.
+   *
+   * @param userId - id владельца операций.
+   * @param query - фильтры (период, тип, категория, валюта, поиск по описанию), сортировка и пагинация.
+   * @returns Страница операций с метаданными пагинации.
+   */
   async findAll(
     userId: string,
     query: TransactionQueryDto,
@@ -67,6 +78,14 @@ export class TransactionsService {
     };
   }
 
+  /**
+   * Операция по id в рамках одного пользователя.
+   *
+   * @param userId - id владельца операции.
+   * @param id - id операции.
+   * @returns Операция вместе с её категорией.
+   * @throws {NotFoundException} Операция с таким id не найдена или принадлежит другому пользователю.
+   */
   async findOne(userId: string, id: string): Promise<TransactionWithCategory> {
     const transaction = await this.prisma.transaction.findFirst({
       where: { id, userId },
@@ -80,6 +99,15 @@ export class TransactionsService {
     return transaction;
   }
 
+  /**
+   * Создаёт операцию для пользователя.
+   *
+   * @param userId - id владельца новой операции.
+   * @param dto - данные операции (сумма, тип, категория, валюта, дата, описание).
+   * @returns Созданная операция вместе с её категорией.
+   * @throws {NotFoundException} Категория из `dto.categoryId` не найдена, не принадлежит
+   * пользователю и не является системной (пробрасывается из {@link FindCategoryByIdQuery}).
+   */
   async create(userId: string, dto: CreateTransactionDto): Promise<TransactionWithCategory> {
     // Проверяем, что категория принадлежит пользователю или является системной
     await this.queryBus.execute(new FindCategoryByIdQuery(userId, dto.categoryId));
@@ -90,6 +118,16 @@ export class TransactionsService {
     });
   }
 
+  /**
+   * Обновляет операцию пользователя.
+   *
+   * @param userId - id владельца операции.
+   * @param id - id обновляемой операции.
+   * @param dto - изменяемые поля операции.
+   * @returns Обновлённая операция вместе с её категорией.
+   * @throws {NotFoundException} Операция не найдена ({@link findOne}), либо новая категория
+   * из `dto.categoryId` не найдена/недоступна пользователю (пробрасывается из {@link FindCategoryByIdQuery}).
+   */
   async update(
     userId: string,
     id: string,
@@ -108,17 +146,38 @@ export class TransactionsService {
     });
   }
 
+  /**
+   * Удаляет операцию пользователя.
+   *
+   * @param userId - id владельца операции.
+   * @param id - id удаляемой операции.
+   * @returns Ничего не возвращает.
+   * @throws {NotFoundException} Операция не найдена ({@link findOne}).
+   */
   async remove(userId: string, id: string): Promise<void> {
     await this.findOne(userId, id);
     await this.prisma.transaction.delete({ where: { id } });
   }
 
-  /** Количество операций, ссылающихся на категорию — используется при её удалении. */
+  /**
+   * Количество операций, ссылающихся на категорию — используется при её удалении
+   * (см. {@link CountTransactionsByCategoryHandler}), чтобы запретить удаление
+   * категории, пока на неё есть ссылки.
+   *
+   * @param categoryId - id проверяемой категории.
+   * @returns Число операций с этой категорией (0, если операций нет).
+   */
   countByCategory(categoryId: string): Promise<number> {
     return this.prisma.transaction.count({ where: { categoryId } });
   }
 
-  /** Агрегация за месяц: доходы, расходы, баланс, разбивка по категориям и по дням. */
+  /**
+   * Агрегация операций за месяц: доходы, расходы, баланс, разбивка по категориям и по дням.
+   *
+   * @param userId - id владельца операций.
+   * @param query - год, месяц и валюта, за которые считается сводка.
+   * @returns Сводка за месяц: суммы, количество операций, разбивка `byCategory` и `byDay`.
+   */
   async summary(userId: string, query: TransactionSummaryQueryDto): Promise<TransactionSummary> {
     const { from, to } = monthRange(periodOf(query.year, query.month));
 
@@ -201,6 +260,13 @@ export class TransactionsService {
     };
   }
 
+  /**
+   * Собирает условие `WHERE` для списка операций из фильтров запроса.
+   *
+   * @param userId - id владельца операций — всегда входит в условие.
+   * @param query - необязательные фильтры: тип, категория, валюта, поиск по описанию, диапазон дат.
+   * @returns Условие Prisma `where` для `transaction.findMany`/`transaction.count`.
+   */
   private buildWhere(userId: string, query: TransactionQueryDto): Prisma.TransactionWhereInput {
     return {
       userId,
@@ -218,7 +284,12 @@ export class TransactionsService {
   }
 }
 
-/** Prisma.Decimal -> целые копейки, без потери точности. */
+/**
+ * Переводит `Prisma.Decimal` в целые копейки, без потери точности.
+ *
+ * @param amount - сумма операции как `Prisma.Decimal`.
+ * @returns Сумма в копейках (целое число).
+ */
 function toCents(amount: Prisma.Decimal): number {
   return amount.mul(100).toNumber();
 }
