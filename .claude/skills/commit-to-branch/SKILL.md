@@ -2,7 +2,7 @@
 name: commit-to-branch
 description: Правила коммитов в этом репозитории — формат сообщений (Conventional Commits) и когда вообще создавать коммит. Используй при создании git-коммитов в текущей ветке.
 model: sonnet
-allowed-tools: Bash(git *)
+allowed-tools: Bash(git *), Read, Glob, Grep
 ---
 
 # Коммит в ветку
