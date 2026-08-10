@@ -1,0 +1,2 @@
+- [Архитектура: FSD](project_architecture_fsd.md) — проект использует Feature-Sliced Design для организации кода
+- [Получение данных: TanStack Query](project_data_fetching_tanstack_query.md) — фронтенд использует @tanstack/react-query для запросов к API
